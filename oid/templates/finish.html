@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% else %}
+        <p>We've verified that you are: {{ identity }}</p>
+    {% endif %}
+{% endblock %}
