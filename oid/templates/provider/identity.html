@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+    <link rel="openid.server" href="{{ provider }}" />
+    <link rel="openid2.provider" href="{{ provider }}" />
+{% endblock %}
+
+{% block body %}
+    <h1>Hi there, {{ identity }}.</h1>
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% endif %}
+{% endblock %}

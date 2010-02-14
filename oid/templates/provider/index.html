@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block extra_head %}
+    <meta http-equiv="x-xrds-location" content="{{ xrds_url }}" />
+{% endblock %}
+
+{% block body %}
+    <h1>Hi there.</h1>
+    {% if error %}
+        <p>Error: {{ error }}</p>
+    {% endif %}
+    {% if needs_identity %}
+        <form method="post" action="{{ request.build_absolute_uri }}">
+            <label for="identity">Who do you want to be?</label>
+            <input type="text" name="identity" id="identity" />
+            <input type="submit" />    
+        </form>
+    {% endif %}
+{% endblock %}

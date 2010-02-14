@@ -6,4 +6,10 @@
     {% else %}
         <p>We've verified that you are: {{ identity }}</p>
     {% endif %}
+    <p>Parameters:</p>
+    <dl>
+        {% for key, value in request.GET.items %}
+            <dt>{{ key }}</dt><dd>{{ value }}</dd>
+        {% endfor %}
+    </dl>
 {% endblock %}
