@@ -28,34 +28,38 @@ def xrds(request):
     }, RequestContext(request), mimetype=YADIS_CONTENT_TYPE)
 
 
+def index(request):
+    response = render_to_response('provider/index.html', {}, RequestContext(request))
+    xrds_url = request.build_absolute_uri(reverse('xrds'))
+    response['X-XRDS-Location'] = xrds_url
+    return response
+
+
 def openid_provider(request, identity=None):
     server = get_server(request)
-    xrds_url = request.build_absolute_uri(reverse('xrds'))
     try:
         openid_request = server.decodeRequest(request.REQUEST)
     except ProtocolError, ex:
         return render_to_response('provider/index.html', {
             'error': str(ex),
-            'xrds_url': xrds_url,
         }, RequestContext(request))
     if openid_request is None:
         # No request, just render the template.
-        return render_to_response('provider/index.html', {'xrds_url': xrds_url}, RequestContext(request))
+        return render_to_response('provider/index.html', {}, RequestContext(request))
 
     if openid_request.mode in ('checkid_immediate', 'checkid_setup'):
         # Got a checkid request. Always return yes. In a real server
         # we'd check that the user is logged in and ask them if they
         # trust the relying party, etc.
         if openid_request.idSelect():
-            # If an identity URL wasn't entered at the RP, then we have to come
-            # up with one... we'll just generate a random one.
+            # If an identity URL wasn't entered at the RP, then we have to
+            # come up with one. We'll ask the user who they want to be.
             if 'identity' in request.POST:
-                # TODO: check that identity matches our identitiy regex [a-zA-Z0-9]+
                 identity = reverse('openid_identity', kwargs={'identity': request.POST['identity']})
                 response = openid_request.answer(True, identity=request.build_absolute_uri(identity))
             else:
                 return render_to_response('provider/index.html', {
-                    'xrds_url': xrds_url,
+                    'trust_root': openid_request.trust_root,
                     'needs_identity': True,
                 }, RequestContext(request))
         else:
@@ -68,7 +72,6 @@ def openid_provider(request, identity=None):
     except EncodingError, ex:
         return render_to_response('provider/index.html', {
             'error': cgi.escape(ex.response.encodeToKVForm()),
-            'xrds_url': xrds_url,
         }, RequestContext(request))
 
 

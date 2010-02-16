@@ -1,3 +1,4 @@
+import urllib
 from oid.store.models import DjangoOpenIDStore
 from openid.consumer import consumer
 from openid.consumer.discover import DiscoveryFailure
@@ -28,7 +29,7 @@ def login(request):
         except DiscoveryFailure, ex:
             # Some protocol-level failure occurred.
             error = "OpenID discovery error: %s" % (ex,)
-            return HttpResponseRedirect(reverse('openid_login') + ('?error=%s' % error))
+            return HttpResponseRedirect('%s?%s' % (reverse('openid_login'), urllib.urlencode({'error': error})))
 
         if request.is_secure():
             realm = 'https://%s' % (request.get_host(),)

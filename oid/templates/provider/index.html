@@ -1,13 +1,12 @@
 {% extends 'base.html' %}
 
-{% block extra_head %}
-    <meta http-equiv="x-xrds-location" content="{{ xrds_url }}" />
-{% endblock %}
-
 {% block body %}
     <h1>Hi there.</h1>
     {% if error %}
         <p>Error: {{ error }}</p>
+    {% endif %}
+    {% if trust_root %}
+        <p>{{ trust_root }} wants to know who you are.</p>
     {% endif %}
     {% if needs_identity %}
         <form method="post" action="{{ request.build_absolute_uri }}">
